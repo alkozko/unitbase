@@ -1,4 +1,5 @@
 open System.Diagnostics
+open System.IO
 #r @"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.6.1\System.Net.Http.dll"
 
 open System.Net.Http
@@ -63,9 +64,19 @@ let private randomGen = Random()
 let getRandom max =
     randomGen.Next(max)
 
+let randomNode cluster =
+    let index = getRandom <| List.length cluster
+    cluster.[index];
+
 let startTask func =
     let tokenSource = new CancellationTokenSource()
     let ct = tokenSource.Token
     let action = (fun _ -> func(ct))
     let task = Task.Factory.StartNew(action, tokenSource)
     task, tokenSource
+
+
+let path =  Path.Combine(Directory.GetParent(__SOURCE_DIRECTORY__ ).FullName, @"demostore\bin\Debug\net461\demostore.exe")
+
+let read proc = client.get <| fst proc
+let write proc = client.put <| fst proc
