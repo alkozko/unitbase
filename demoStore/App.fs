@@ -2,7 +2,7 @@ namespace  Demostore
 
 open Nancy
 open System.IO
-open System.Threading
+open Demostore.Distribution
 
 module App =
     
@@ -14,17 +14,11 @@ module App =
     type App() as this =
         inherit NancyModule()
 
-        static let mutable data = ""
-        static let locker = new ReaderWriterLockSlim()
+        let store = OneNodeStoreLogic()
 
         do this.Get.["/data", true] <- fun ctx ct ->
             async {
-                
-                locker.EnterReadLock()
-                let response = data :> obj
-                locker.ExitReadLock()
-                
-                return response
+                return store.Read() :> obj
             }
             |> Async.StartAsTask
 
@@ -34,11 +28,9 @@ module App =
             async {
                 use reader = new StreamReader(this.Request.Body)
                 let! content = reader.ReadToEndAsync() |> Async.AwaitTask
-                
-                locker.EnterWriteLock()
-                data <- content
-                locker.ExitWriteLock()
-
-                return "OK" :> obj
+               
+                do! store.Write content
+               
+                return HttpStatusCode.OK :> obj
             }
             |> Async.StartAsTask
