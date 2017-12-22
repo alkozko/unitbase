@@ -2,7 +2,7 @@ namespace Demostore.Distribution
 open System.Threading
 
 [<AbstractClass>]
-type DistributionStoreBaseLogic() =
+type DistributionBaseLogic() =
 
     static let mutable data = ""
     static let locker = new ReaderWriterLockSlim()
@@ -19,5 +19,5 @@ type DistributionStoreBaseLogic() =
         content
 
         
-    abstract member Write: string -> Async<unit>
-    abstract member Read: unit -> string
+    abstract member Write: bool -> string -> Async<unit>
+    abstract member Read: bool -> string
