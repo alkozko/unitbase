@@ -1,6 +1,7 @@
 #load "./TestingUtils.fsx"
 #load "./_TestSequential.fsx"
 #load "./_TestMasterSlave.fsx"
+#load "./_TestParallelReadWrite.fsx"
 
 open TestingUtils
 
@@ -18,8 +19,10 @@ console.writeOk "====== Async Tests STARTED===="
 let master, cluster = processManagment.createAsyncCluser 3
 
 _TestMasterSlave.Run true master cluster
-_TestSequential.Run false false master cluster // FAIL due to async replication
+_TestSequential.Run false false master cluster // FAIL
 _TestSequential.Run false true master cluster
+_TestParallelReadWrite.Run false master cluster // FAIL
+_TestParallelReadWrite.Run true master cluster
 
 processManagment.stopCluster cluster
 console.writeOk "====== Async Tests FINISHED ===="
