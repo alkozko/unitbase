@@ -14,15 +14,17 @@ module App =
 
     let getDistributionLogic() =
         match Settings.ReplicationMode with
-        | Nothing -> SingleNodeLogic() :> DistributionBaseLogic
+        | OneNode -> SingleNodeLogic() :> DistributionBaseLogic
         | Async -> AsyncReplicationLogic(Settings.AplicationMode, Settings.Followers) :> DistributionBaseLogic
 
     type App() as this =
         inherit NancyModule()
 
         let getContent (request: Request) = 
-            use reader = new StreamReader(request.Body)
-            reader.ReadToEndAsync() |> Async.AwaitTask
+            async {
+                use reader = new StreamReader(request.Body)
+                return! reader.ReadToEndAsync() |> Async.AwaitTask
+            }
 
         let store = getDistributionLogic()
 
@@ -40,7 +42,8 @@ module App =
                     do! store.Write false content
                     return HttpStatusCode.OK :> obj
                 with 
-                | :? System.InvalidOperationException -> return HttpStatusCode.NotImplemented :> obj
+                | :? System.InvalidOperationException -> 
+                    return HttpStatusCode.NotImplemented :> obj
                 | _ -> return HttpStatusCode.InternalServerError :> obj
             }
             |> Async.StartAsTask

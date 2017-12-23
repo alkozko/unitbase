@@ -5,14 +5,14 @@ module Main=
     open Nancy
     open Nancy.Hosting.Self
     open System
+    open Microsoft.FSharp.Reflection
     open Demostore.Application
 
     let baseUriString = "http://localhost:"
 
-    open Microsoft.FSharp.Reflection
 
     let fromString<'a> (s:string) =
-        match FSharpType.GetUnionCases typeof<'a> |> Array.filter (fun case -> case.Name = s) with
+        match FSharpType.GetUnionCases typeof<'a> |> Array.filter (fun case -> (case.Name.ToLowerInvariant()) = (s.ToLowerInvariant())) with
         |[|case|] -> Some(FSharpValue.MakeUnion(case,[||]) :?> 'a)
         |_ -> None
 
