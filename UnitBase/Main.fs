@@ -1,4 +1,4 @@
-namespace Demostore
+namespace Unitbase
 
 module Main=
     
@@ -6,7 +6,7 @@ module Main=
     open Nancy.Hosting.Self
     open System
     open Microsoft.FSharp.Reflection
-    open Demostore.Application
+    open Unitbase.Application
 
     let baseUriString = "http://localhost:"
 

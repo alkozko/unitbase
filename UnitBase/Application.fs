@@ -1,4 +1,4 @@
-namespace Demostore.Application
+namespace Unitbase.Application
 
 type ReplicationMode = OneNode | Async | Sync
 

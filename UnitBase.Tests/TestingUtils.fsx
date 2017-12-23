@@ -8,7 +8,7 @@ open System
 open System.Threading.Tasks
 open System.Threading
 
-let path =  Path.Combine(Directory.GetParent(__SOURCE_DIRECTORY__ ).FullName, @"demostore\bin\Debug\net461\demostore.exe")
+let path =  Path.Combine(Directory.GetParent(__SOURCE_DIRECTORY__ ).FullName, @"UnitBase\bin\Debug\net461\UnitBase.exe")
 
 
 module client = 

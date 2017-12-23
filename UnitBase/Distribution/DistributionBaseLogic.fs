@@ -1,4 +1,4 @@
-namespace Demostore.Distribution
+namespace Unitbase.Distribution
 open System.Threading
 
 [<AbstractClass>]

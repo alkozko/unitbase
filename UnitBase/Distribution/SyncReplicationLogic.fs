@@ -1,7 +1,7 @@
-namespace Demostore.Distribution
+namespace Unitbase.Distribution
 open System.Net.Http
 open System.Text
-open Demostore.Application
+open Unitbase.Application
 open System
 
 type SyncReplicationLogic(mode, followers) =
