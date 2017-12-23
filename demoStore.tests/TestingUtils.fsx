@@ -8,6 +8,9 @@ open System
 open System.Threading.Tasks
 open System.Threading
 
+let path =  Path.Combine(Directory.GetParent(__SOURCE_DIRECTORY__ ).FullName, @"demostore\bin\Debug\net461\demostore.exe")
+
+
 module client = 
     let private getClient() =
         let client = new HttpClient();
@@ -46,18 +49,26 @@ module console =
  
 
 module processManagment =  
-    let private startDemostore path port =
-        let arguments = sprintf "-port=%i" port 
-        Process.Start(path, arguments)
+    let private startDemostore path port replication mode followers =
+        let arguments = sprintf "-port=%i -repication=%s -mode=%s" port replication mode
+        if not (List.isEmpty followers) then
+            Process.Start(path, arguments + "-followers=" + String.Join(",", followers)) 
+        else
+            Process.Start(path, arguments)
 
     let private stopProcess (proc: Process) = 
         proc.Kill()
         proc.Dispose()
 
-    let start path port = 
-        sprintf "http://localhost:%i" port, startDemostore path port
+    let startOneNode port = 
+        sprintf "http://localhost:%i" port, startDemostore path port "oneNode" "regular" []
 
     let stop proc = stopProcess <| snd proc
+
+    let createAsyncCluser count = 
+        [1..count]
+        |> List.map (fun n -> startDemostore path (9000+(n*100)) "Async" "Follower")
+
 
 let private randomGen = Random()
 
@@ -76,7 +87,6 @@ let startTask func =
     task, tokenSource
 
 
-let path =  Path.Combine(Directory.GetParent(__SOURCE_DIRECTORY__ ).FullName, @"demostore\bin\Debug\net461\demostore.exe")
 
 let read proc = client.get <| fst proc
 let write proc = client.put <| fst proc
