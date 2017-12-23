@@ -1,6 +1,6 @@
 namespace Demostore.Application
 
-type ReplicationMode = OneNode | Async
+type ReplicationMode = OneNode | Async | Sync
 
 type AplicationMode = Regular | Leader | Follower
 

@@ -9,7 +9,8 @@ open TestingUtils
 let Run pause master cluster = 
     let records = [1..100]
                 |> List.map (fun _ -> (Guid.NewGuid().ToString().Replace("-","")))
-    write (master |> List.head) "" |> Async.RunSynchronously |> ignore
+    let result = write (master |> List.head) "" |> Async.RunSynchronously
+    result.EnsureSuccessStatusCode()
     let readTimes = List<string*(int64*int64)>()
 
     let timer = Stopwatch.StartNew();

@@ -8,6 +8,7 @@
     <Compile Include="Distribution\DistributionBaseLogic.fs" />
     <Compile Include="Distribution\SingleNodeLogic.fs" />
     <Compile Include="Distribution\AsyncReplicationLogic.fs" />
+    <Compile Include="Distribution\SyncReplicationLogic.fs" />
     <Compile Include="App.fs" />
     <Compile Include="Main.fs" />
     <None Include="App.config" />

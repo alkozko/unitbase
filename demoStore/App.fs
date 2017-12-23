@@ -16,6 +16,7 @@ module App =
         match Settings.ReplicationMode with
         | OneNode -> SingleNodeLogic() :> DistributionBaseLogic
         | Async -> AsyncReplicationLogic(Settings.AplicationMode, Settings.Followers) :> DistributionBaseLogic
+        | Sync -> SyncReplicationLogic(Settings.AplicationMode, Settings.Followers) :> DistributionBaseLogic
 
     type App() as this =
         inherit NancyModule()

@@ -68,14 +68,14 @@ module processManagment =
 
     let stop proc = stopProcess <| snd proc
 
-    let createAsyncCluser count = 
+    let createCluser mode count = 
         let followers = 
             [1..count-1]
             |> List.map ((fun n -> 9000+(n*100)) >> 
-                (fun port -> getUrl port, startDemostore path port "async" "follower" [])
+                (fun port -> getUrl port, startDemostore path port mode "follower" [])
                 )
 
-        let master = getUrl 9000, startDemostore path (9000) "async" "leader" (followers |> List.map fst)
+        let master = getUrl 9000, startDemostore path (9000) mode "leader" (followers |> List.map fst)
 
         [master], master::followers
 
