@@ -11,7 +11,7 @@ type AsyncReplicationLogic(mode, followers) =
         async {
             use client = new HttpClient();
             client.DefaultRequestHeaders.Clear()        
-            let url = sprintf "%s/inner_data" url
+            let url = sprintf "%s/replica" url
             use content = new ByteArrayContent(Encoding.UTF8.GetBytes(value))
             let! result = client.PutAsync(url, content) |> Async.AwaitTask;
             return result |> ignore
@@ -22,8 +22,7 @@ type AsyncReplicationLogic(mode, followers) =
 
     override x.Write replica content =
         async {
-            
-            if (mode <> AplicationMode.Leader) then
+            if (mode <> AplicationMode.Leader && not replica) then
                 raise <| InvalidOperationException()
 
             x.WriteData content
