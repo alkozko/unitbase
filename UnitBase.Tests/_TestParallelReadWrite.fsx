@@ -1,7 +1,7 @@
-open System.Diagnostics
-open System.Collections.Generic
 #load "./TestingUtils.fsx"
 
+open System.Diagnostics
+open System.Collections.Generic
 open System
 open TestingUtils
 
@@ -11,6 +11,9 @@ let Run pause master cluster =
                 |> List.map (fun _ -> (Guid.NewGuid().ToString().Replace("-","")))
     let result = write (master |> List.head) "" |> Async.RunSynchronously
     result.EnsureSuccessStatusCode()
+
+    Async.Sleep 500 |> Async.RunSynchronously
+
     let readTimes = List<string*(int64*int64)>()
 
     let timer = Stopwatch.StartNew();

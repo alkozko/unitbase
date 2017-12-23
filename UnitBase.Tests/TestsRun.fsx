@@ -2,6 +2,7 @@
 #load "./_TestSequential.fsx"
 #load "./_TestMasterSlave.fsx"
 #load "./_TestParallelReadWrite.fsx"
+#load "./_TestParallelWrite.fsx"
 
 open TestingUtils
 
@@ -34,6 +35,7 @@ let smaster, scluster = processManagment.createCluser "sync" 3
 _TestMasterSlave.Run true smaster scluster
 _TestSequential.Run false false smaster scluster
 _TestParallelReadWrite.Run false smaster scluster 
+_TestParallelWrite.Run false smaster scluster  // Sometimes FAIL
 
 processManagment.stopCluster scluster
 console.writeOk "====== Sync Tests FINISHED ===="
