@@ -52,7 +52,7 @@ module processManagment =
     let private startDemostore path port replication mode followers =
         let arguments = sprintf "-port=%i -repication=%s -mode=%s" port replication mode
         if not (List.isEmpty followers) then
-            Process.Start(path, arguments + "-followers=" + String.Join(",", followers)) 
+            Process.Start(path, arguments + " -followers=" + String.Join(",", followers)) 
         else
             Process.Start(path, arguments)
 
@@ -60,14 +60,27 @@ module processManagment =
         proc.Kill()
         proc.Dispose()
 
+    let private getUrl port =
+        sprintf "http://localhost:%i" port
+
     let startOneNode port = 
-        sprintf "http://localhost:%i" port, startDemostore path port "oneNode" "regular" []
+        getUrl port, startDemostore path port "oneNode" "regular" []
 
     let stop proc = stopProcess <| snd proc
 
     let createAsyncCluser count = 
-        [1..count]
-        |> List.map (fun n -> startDemostore path (9000+(n*100)) "Async" "Follower")
+        let followers = 
+            [1..count-1]
+            |> List.map ((fun n -> 9000+(n*100)) >> 
+                (fun port -> getUrl port, startDemostore path port "async" "follower" [])
+                )
+
+        let master = getUrl 9000, startDemostore path (9000) "async" "leader" (followers |> List.map fst)
+
+        [master], master::followers
+
+    let stopCluster cluster =
+        cluster |> List.iter stop
 
 
 let private randomGen = Random()

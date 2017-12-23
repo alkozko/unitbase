@@ -4,8 +4,8 @@ open System
 open TestingUtils
 
 
-let Run master cluster = 
-    let records = [1..1000]
+let Run extendedLogging pause master cluster = 
+    let records = [1..100]
                     |> List.map (fun _ -> (Guid.NewGuid().ToString().Replace("-","")))
 
     let results =
@@ -14,15 +14,20 @@ let Run master cluster =
             async {
                 let! res = write (randomNode master) r
                 do res.EnsureSuccessStatusCode() |> ignore
-                let! readResult = read (randomNode cluster)
-                if r <> readResult then
-                    console.writeError <| sprintf "Expected %s, received %s" r readResult
+                let node = (randomNode cluster)
+                if (pause) then
+                    do! Async.Sleep 100
+                let! readResult = read node
+                if r <> readResult && extendedLogging then
+                    console.writeError <| sprintf "Expected %s, received %s from %s" r readResult (fst node)
 
-                return r <> readResult
+                return r = readResult
             })
             >> Async.RunSynchronously)
 
-    if (results |> List.contains false) |> not then
-        console.writeError "FAILED Sequential read\\write test"
+    let pauseappendix = (if pause then "with pauses" else "")
+
+    if (results |> List.contains false) then
+        console.writeError <| sprintf "FAILED Sequential read\\write %s; failed %i from %i" pauseappendix (results |> List.where not |> List.length) results.Length
     else
-        console.writeOk "PASSED Sequential read\\write test"
+        console.writeOk <| sprintf "PASSED Sequential read\\write %s" pauseappendix
